@@ -1,5 +1,205 @@
 import { transformerTwoslash } from "@shikijs/vitepress-twoslash";
 import { defineConfig } from "vitepress";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import matter from "gray-matter";
+
+// Define the dirname equivalent for ESM
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Define sidebar item type
+interface SidebarItem {
+  text: string;
+  link: string;
+  items?: SidebarItem[];
+  collapsed?: boolean;
+}
+
+// Define the release notes items manually but in a more maintainable way using a version ranges array
+function generateReleaseNotesSidebar() {
+  // Define the version ranges we want to support
+  const majorVersions = [5, 4, 3, 2, 1];
+  const versionRanges = {
+    5: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+    4: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
+    3: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
+    2: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
+    1: [8, 7, 6, 5, 4, 3, 1],
+  };
+
+  // Generate the sidebar items
+  const items: SidebarItem[] = [];
+
+  // For each major version
+  for (const major of majorVersions) {
+    // For each minor version
+    for (const minor of versionRanges[major]) {
+      const version = `${major}.${minor}`;
+      items.push({
+        text: `TypeScript ${version}`,
+        link: `/release-notes/TypeScript ${version}`,
+      });
+    }
+  }
+
+  return items;
+}
+
+/**
+ * Function to generate sidebar from folder structure
+ * @param rootDir - Root directory to start scanning from (relative to docs/)
+ * @param basePath - Base URL path for links
+ * @param defaultCollapsed - Whether sections should be collapsed by default
+ * @returns Array of sidebar items
+ */
+function generateSidebarFromFolders(
+  rootDir: string,
+  basePath: string = "/",
+  defaultCollapsed: boolean = false
+): SidebarItem[] {
+  const docsDir = path.resolve(__dirname, "..");
+  const fullPath = path.join(docsDir, rootDir);
+
+  if (!fs.existsSync(fullPath)) {
+    console.warn(`Directory not found: ${fullPath}`);
+    return [];
+  }
+
+  const items: SidebarItem[] = [];
+  const dirContents = fs.readdirSync(fullPath, { withFileTypes: true });
+
+  // Process directories first (for better organization)
+  const dirs = dirContents.filter(
+    (dirent) => dirent.isDirectory() && !dirent.name.startsWith(".")
+  );
+  const files = dirContents.filter(
+    (dirent) =>
+      dirent.isFile() &&
+      dirent.name.endsWith(".md") &&
+      dirent.name !== "index.md"
+  );
+
+  // Check if index.md exists for this directory
+  const indexFile = dirContents.find(
+    (dirent) => dirent.isFile() && dirent.name === "index.md"
+  );
+
+  // Process directories
+  for (const dir of dirs) {
+    const dirPath = path.join(rootDir, dir.name);
+    const linkPath = `${basePath}${dir.name}/`;
+
+    // Get subdirectory items
+    const subItems = generateSidebarFromFolders(dirPath, linkPath, true);
+
+    // Try to find index.md in subdirectory for the title
+    const indexPath = path.join(fullPath, dir.name, "index.md");
+    let text =
+      dir.name.charAt(0).toUpperCase() + dir.name.slice(1).replace(/-/g, " ");
+
+    if (fs.existsSync(indexPath)) {
+      try {
+        const fileContent = fs.readFileSync(indexPath, "utf8");
+        const { data } = matter(fileContent);
+        if (data.title) {
+          text = data.title;
+        }
+      } catch (error) {
+        console.warn(`Error reading frontmatter from ${indexPath}:`, error);
+      }
+    }
+
+    items.push({
+      text,
+      link: linkPath,
+      items: subItems,
+      collapsed: defaultCollapsed,
+    });
+  }
+
+  // Process markdown files
+  for (const file of files) {
+    const fileName = file.name.replace(".md", "");
+    const filePath = path.join(fullPath, file.name);
+
+    try {
+      const fileContent = fs.readFileSync(filePath, "utf8");
+      const { data } = matter(fileContent);
+
+      items.push({
+        text:
+          data.title ||
+          fileName.charAt(0).toUpperCase() +
+            fileName.slice(1).replace(/-/g, " "),
+        link: `${basePath}${fileName}`,
+      });
+    } catch (error) {
+      console.warn(`Error reading frontmatter from ${filePath}:`, error);
+
+      // Fallback to using filename
+      items.push({
+        text:
+          fileName.charAt(0).toUpperCase() +
+          fileName.slice(1).replace(/-/g, " "),
+        link: `${basePath}${fileName}`,
+      });
+    }
+  }
+
+  // Sort items alphabetically by text
+  items.sort((a, b) => {
+    // If indexFile exists, put it first
+    if (a.link.endsWith("/")) return -1;
+    if (b.link.endsWith("/")) return 1;
+    return a.text.localeCompare(b.text);
+  });
+
+  return items;
+}
+
+// Generate sidebar for main sections
+function generateMainSidebar() {
+  const mainSections = [
+    { path: "get-started", title: "Get Started" },
+    { path: "handbook", title: "Handbook" },
+    { path: "reference", title: "Reference" },
+    { path: "modules-reference", title: "Modules Reference" },
+    { path: "tutorials", title: "Tutorials" },
+    { path: "declaration-files", title: "Declaration Files" },
+    { path: "javascript", title: "JavaScript" },
+    { path: "project-config", title: "Project Configuration" },
+  ];
+
+  const sidebar: SidebarItem[] = [];
+
+  for (const section of mainSections) {
+    // Check if directory exists
+    const sectionPath = path.resolve(__dirname, "..", section.path);
+    if (!fs.existsSync(sectionPath)) {
+      continue;
+    }
+
+    const items = generateSidebarFromFolders(section.path, `/${section.path}/`);
+
+    sidebar.push({
+      text: section.title,
+      collapsed: false,
+      link: `/${section.path}/`,
+      items: items,
+    });
+  }
+
+  // Add Release Notes section with manually generated items
+  sidebar.push({
+    text: "Release Notes",
+    collapsed: true,
+    link: "/release-notes/",
+    items: generateReleaseNotesSidebar(),
+  });
+
+  return sidebar;
+}
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -9,7 +209,7 @@ export default defineConfig({
     codeTransformers: [
       transformerTwoslash({
         explicitTrigger: true,
-      }),
+      }) as any,
     ],
     languages: ["js", "jsx", "ts", "tsx"] as any,
   },
@@ -17,203 +217,19 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: "Home", link: "/" },
-      { text: "Examples", link: "/markdown-examples" },
+      { text: "Release Notes", link: "/release-notes/" },
+      { text: "Handbook", link: "/handbook/the-handbook" },
+      { text: "Tutorials", link: "/tutorials/migrating-from-javascript" },
     ],
 
-    sidebar: [
-      {
-        text: "Get Started",
-        collapsed: false,
-        items: [
-          {
-            text: "For New Programmers",
-            link: "/get-started/ts-for-new-programmers",
-          },
-          {
-            text: "For JS Programmers",
-            link: "/get-started/ts-for-js-programmers",
-          },
-          {
-            text: "For Java/C# Programmers",
-            link: "/get-started/ts-for-java-csharp-programmers",
-          },
-          {
-            text: "For Functional Programmers",
-            link: "/get-started/ts-for-functional-programmers",
-          },
-          {
-            text: "Typescript Tooling",
-            link: "/get-started/typescript-tooling",
-          },
-        ],
-      },
-      {
-        text: "Handbook",
-        collapsed: false,
-        items: [
-          { text: "The Handbook", link: "/handbook/the-handbook" },
-          { text: "The Basics", link: "/handbook/basics" },
-          { text: "Everyday Types", link: "/handbook/everyday-types" },
-          { text: "Narrowing", link: "/handbook/narrowing" },
-          { text: "More on Functions", link: "/handbook/more-on-functions" },
-          { text: "Object Types", link: "/handbook/object-types" },
-          {
-            text: "Type Manipulation",
-            link: "/handbook/type-manipulation/creating-types-from-types",
-            collapsed: true,
-            items: [
-              {
-                text: "Creating Types from Types",
-                link: "/handbook/type-manipulation/creating-types-from-types",
-              },
-              {
-                text: "Generics",
-                link: "/handbook/type-manipulation/generics",
-              },
-              {
-                text: "Keyof Type Operator",
-                link: "/handbook/type-manipulation/keyof-type-operator",
-              },
-              {
-                text: "Typeof Type Operator",
-                link: "/handbook/type-manipulation/typeof-type-operator",
-              },
-              {
-                text: "Indexed Access Types",
-                link: "/handbook/type-manipulation/indexed-access-types",
-              },
-              {
-                text: "Conditional Types",
-                link: "/handbook/type-manipulation/conditional-types",
-              },
-              {
-                text: "Mapped Types",
-                link: "/handbook/type-manipulation/mapped-types",
-              },
-              {
-                text: "Template Literal Types",
-                link: "/handbook/type-manipulation/template-literal-types",
-              },
-            ],
-          },
-          { text: "Classes", link: "/handbook/classes" },
-          { text: "Modules", link: "/handbook/modules" },
-          { text: "Type Declarations", link: "/handbook/type-declarations" },
-          {
-            text: "Understanding Errors",
-            link: "/handbook/understanding-errors",
-          },
-        ],
-      },
-      {
-        text: "Reference",
-        collapsed: false,
-        items: [
-          { text: "Advanced Types", link: "/reference/advanced-types" },
-          {
-            text: "Declaration Merging",
-            link: "/reference/declaration-merging",
-          },
-          { text: "Decorators", link: "/reference/decorators" },
-          { text: "Enums", link: "/reference/enums" },
-          {
-            text: "Iterators and Generators",
-            link: "/reference/iterators-and-generators",
-          },
-          { text: "JSX", link: "/reference/jsx" },
-          { text: "Mixins", link: "/reference/mixins" },
-          { text: "Namespaces", link: "/reference/namespaces" },
-          {
-            text: "Namespaces and Modules",
-            link: "/reference/namespaces-and-modules",
-          },
-          { text: "Symbols", link: "/reference/symbols" },
-          {
-            text: "Triple-Slash Directives",
-            link: "/reference/triple-slash-directives",
-          },
-          { text: "Type Compatibility", link: "/reference/type-compatibility" },
-          { text: "Type Inference", link: "/reference/type-inference" },
-          { text: "Utility Types", link: "/reference/utility-types" },
-          {
-            text: "Variable Declarations",
-            link: "/reference/variable-declarations",
-          },
-        ],
-      },
-      {
-        text: "Modules Reference",
-        collapsed: false,
-        items: [
-          { text: "Introduction", link: "/modules-reference/introduction" },
-          { text: "Theory", link: "/modules-reference/theory" },
-          { text: "Reference", link: "/modules-reference/reference" },
-          {
-            text: "Guides",
-            collapsed: true,
-            items: [
-              {
-                text: "Choosing Compiler Options",
-                link: "/modules-reference/guides/choosing-compiler-options",
-              },
-            ],
-          },
-          {
-            text: "Appendices",
-            collapsed: true,
-            items: [
-              {
-                text: "ESM/CJS Interoperability",
-                link: "/modules-reference/appendices/esm-cjs-interop",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        text: "Guides",
-        collapsed: false,
-        items: [
-          {
-            text: "Choosing Compiler Options",
-            link: "/guides/compiler-options",
-          },
-        ],
-      },
-      {
-        text: "Appendices",
-        collapsed: true,
-        link: "/appendices/",
-      },
-      {
-        text: "Tutorials",
-        collapsed: true,
-        link: "/tutorials/",
-      },
-      {
-        text: "What's New",
-        collapsed: true,
-        link: "/whats-new/",
-      },
-      {
-        text: "Declaration Files",
-        collapsed: true,
-        link: "/declaration-files/",
-      },
-      {
-        text: "JavaScript",
-        collapsed: true,
-        link: "/javascript/",
-      },
-      {
-        text: "Project Configuration",
-        collapsed: true,
-        link: "/project-configuration/",
-      },
-    ],
+    // Use the dynamic sidebar generator
+    sidebar: generateMainSidebar(),
 
     socialLinks: [
-      { icon: "github", link: "https://github.com/vuejs/vitepress" },
+      { icon: "github", link: "https://github.com/chan27-2/typescriptdocs" },
     ],
+    footer: {
+      message: "Made with ♥︎ by Chan27-2",
+    },
   },
 });
