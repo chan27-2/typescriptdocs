@@ -1,0 +1,14 @@
+node_modules
+
+# Vitepress
+docs/.vitepress/cache
+docs/.vitepress/temp
+
+# VSCode
+.vscode
+
+# cursor
+.cursorrules
+
+# rename-files.sh
+rename-files.sh
