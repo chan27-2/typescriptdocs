@@ -1,0 +1,580 @@
+[
+  {
+    "text": "Get Started",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "TypeScript for Functional Programmers",
+        "link": "/get-started/ts-for-functional-programmers"
+      },
+      {
+        "text": "TypeScript for Java/C# Programmers",
+        "link": "/get-started/ts-for-java-csharp-programmers"
+      },
+      {
+        "text": "TypeScript for JavaScript Programmers",
+        "link": "/get-started/ts-for-js-programmers"
+      },
+      {
+        "text": "TypeScript for the New Programmer",
+        "link": "/get-started/ts-for-new-programmers"
+      },
+      {
+        "text": "TypeScript Tooling in 5 minutes",
+        "link": "/get-started/typescript-tooling"
+      }
+    ]
+  },
+  {
+    "text": "Handbook",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "Type manipulation",
+        "link": "/handbook/type-manipulation/",
+        "items": [
+          {
+            "text": "Conditional Types",
+            "link": "/handbook/type-manipulation/conditional-types"
+          },
+          {
+            "text": "Creating Types from Types",
+            "link": "/handbook/type-manipulation/creating-types-from-types"
+          },
+          {
+            "text": "Generics",
+            "link": "/handbook/type-manipulation/generics"
+          },
+          {
+            "text": "Indexed Access Types",
+            "link": "/handbook/type-manipulation/indexed-access-types"
+          },
+          {
+            "text": "Keyof Type Operator",
+            "link": "/handbook/type-manipulation/keyof-type-operator"
+          },
+          {
+            "text": "Mapped Types",
+            "link": "/handbook/type-manipulation/mapped-types"
+          },
+          {
+            "text": "Template Literal Types",
+            "link": "/handbook/type-manipulation/template-literal-types"
+          },
+          {
+            "text": "Typeof Type Operator",
+            "link": "/handbook/type-manipulation/typeof-type-operator"
+          }
+        ],
+        "collapsed": false
+      },
+      {
+        "text": "Classes",
+        "link": "/handbook/classes"
+      },
+      {
+        "text": "Everyday Types",
+        "link": "/handbook/everyday-types"
+      },
+      {
+        "text": "Modules",
+        "link": "/handbook/modules"
+      },
+      {
+        "text": "More on Functions",
+        "link": "/handbook/more-on-functions"
+      },
+      {
+        "text": "Narrowing",
+        "link": "/handbook/narrowing"
+      },
+      {
+        "text": "Object Types",
+        "link": "/handbook/object-types"
+      },
+      {
+        "text": "The Basics",
+        "link": "/handbook/basics"
+      },
+      {
+        "text": "The TypeScript Handbook",
+        "link": "/handbook/the-handbook"
+      },
+      {
+        "text": "Type Declarations",
+        "link": "/handbook/type-declarations"
+      },
+      {
+        "text": "Understanding Errors",
+        "link": "/handbook/understanding-errors"
+      }
+    ]
+  },
+  {
+    "text": "Reference",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "Advanced Types",
+        "link": "/reference/advanced-types"
+      },
+      {
+        "text": "Declaration Merging",
+        "link": "/reference/declaration-merging"
+      },
+      {
+        "text": "Decorators",
+        "link": "/reference/decorators"
+      },
+      {
+        "text": "Enums",
+        "link": "/reference/enums"
+      },
+      {
+        "text": "Iterators and Generators",
+        "link": "/reference/iterators-and-generators"
+      },
+      {
+        "text": "JSX",
+        "link": "/reference/jsx"
+      },
+      {
+        "text": "Mixins",
+        "link": "/reference/mixins"
+      },
+      {
+        "text": "Namespaces",
+        "link": "/reference/namespaces"
+      },
+      {
+        "text": "Namespaces and Modules",
+        "link": "/reference/namespaces-and-modules"
+      },
+      {
+        "text": "Symbols",
+        "link": "/reference/symbols"
+      },
+      {
+        "text": "Triple-Slash Directives",
+        "link": "/reference/triple-slash-directives"
+      },
+      {
+        "text": "Type Compatibility",
+        "link": "/reference/type-compatibility"
+      },
+      {
+        "text": "Type Inference",
+        "link": "/reference/type-inference"
+      },
+      {
+        "text": "Utility Types",
+        "link": "/reference/utility-types"
+      },
+      {
+        "text": "Variable Declaration",
+        "link": "/reference/variable-declarations"
+      }
+    ]
+  },
+  {
+    "text": "Modules Reference",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "Appendices",
+        "link": "/modules-reference/appendices/",
+        "items": [
+          {
+            "text": "Modules - ESM/CJS Interoperability",
+            "link": "/modules-reference/appendices/esm-cjs-interop"
+          }
+        ],
+        "collapsed": false
+      },
+      {
+        "text": "Diagrams",
+        "link": "/modules-reference/diagrams/",
+        "items": [
+          {
+            "text": "esm cjs interop",
+            "link": "/modules-reference/diagrams/esm-cjs-interop"
+          },
+          {
+            "text": "theory",
+            "link": "/modules-reference/diagrams/theory"
+          }
+        ],
+        "collapsed": false
+      },
+      {
+        "text": "Guides",
+        "link": "/modules-reference/guides/",
+        "items": [
+          {
+            "text": "Modules - Choosing Compiler Options",
+            "link": "/modules-reference/guides/choosing-compiler-options"
+          }
+        ],
+        "collapsed": false
+      },
+      {
+        "text": "Modules - Introduction",
+        "link": "/modules-reference/introduction"
+      },
+      {
+        "text": "Modules - Reference",
+        "link": "/modules-reference/reference"
+      },
+      {
+        "text": "Modules - Theory",
+        "link": "/modules-reference/theory"
+      }
+    ]
+  },
+  {
+    "text": "Tutorials",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "Angular",
+        "link": "/tutorials/angular"
+      },
+      {
+        "text": "DOM Manipulation",
+        "link": "/tutorials/dom-manipulation"
+      },
+      {
+        "text": "Gulp",
+        "link": "/tutorials/gulp"
+      },
+      {
+        "text": "Migrating from JavaScript",
+        "link": "/tutorials/migrating-from-javascript"
+      },
+      {
+        "text": "React",
+        "link": "/tutorials/react"
+      },
+      {
+        "text": "Using Babel with TypeScript",
+        "link": "/tutorials/babel-with-typescript"
+      }
+    ]
+  },
+  {
+    "text": "Declaration Files",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "Templates",
+        "link": "/declaration-files/templates/",
+        "items": [
+          {
+            "text": "Global .d.ts",
+            "link": "/declaration-files/templates/global"
+          },
+          {
+            "text": "Global: Modifying Module",
+            "link": "/declaration-files/templates/global-modifying-module"
+          },
+          {
+            "text": "Global: Plugin",
+            "link": "/declaration-files/templates/global-plugin"
+          },
+          {
+            "text": "Module: Class",
+            "link": "/declaration-files/templates/module-class"
+          },
+          {
+            "text": "Module: Function",
+            "link": "/declaration-files/templates/module-function"
+          },
+          {
+            "text": "Module: Plugin",
+            "link": "/declaration-files/templates/module-plugin"
+          },
+          {
+            "text": "Modules .d.ts",
+            "link": "/declaration-files/templates/module"
+          }
+        ],
+        "collapsed": false
+      },
+      {
+        "text": "Consumption",
+        "link": "/declaration-files/consumption"
+      },
+      {
+        "text": "Declaration Reference",
+        "link": "/declaration-files/by-example"
+      },
+      {
+        "text": "Deep Dive",
+        "link": "/declaration-files/deep-dive"
+      },
+      {
+        "text": "Do's and Don'ts",
+        "link": "/declaration-files/do's-and-don'ts"
+      },
+      {
+        "text": "Introduction",
+        "link": "/declaration-files/introduction"
+      },
+      {
+        "text": "Library Structures",
+        "link": "/declaration-files/library-structures"
+      },
+      {
+        "text": "Publishing",
+        "link": "/declaration-files/publishing"
+      },
+      {
+        "text": "Templates",
+        "link": "/declaration-files/templates"
+      }
+    ]
+  },
+  {
+    "text": "JavaScript",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "Creating .d.ts Files from .js files",
+        "link": "/javascript/creating-dts-files-from-js"
+      },
+      {
+        "text": "JS Projects Utilizing TypeScript",
+        "link": "/javascript/intro-to-js-with-ts"
+      },
+      {
+        "text": "JSDoc Reference",
+        "link": "/javascript/jsdoc-reference"
+      },
+      {
+        "text": "Type Checking JavaScript Files",
+        "link": "/javascript/type-checking-javascript-files"
+      }
+    ]
+  },
+  {
+    "text": "Project Configuration",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "Compiler Options in MSBuild",
+        "link": "/project-config/compiler-options-in-msbuild"
+      },
+      {
+        "text": "Configuring Watch",
+        "link": "/project-config/configuring-watch"
+      },
+      {
+        "text": "Integrating with Build Tools",
+        "link": "/project-config/integrating-with-build-tools"
+      },
+      {
+        "text": "Project References",
+        "link": "/project-config/project-references"
+      },
+      {
+        "text": "tsc CLI Options",
+        "link": "/project-config/compiler-options"
+      },
+      {
+        "text": "What is a tsconfig.json",
+        "link": "/project-config/tsconfig.json"
+      }
+    ]
+  },
+  {
+    "text": "Release Notes",
+    "collapsed": true,
+    "link": "/release-notes/",
+    "items": [
+      {
+        "text": "TypeScript 5.8",
+        "link": "/release-notes/TypeScript 5.8"
+      },
+      {
+        "text": "TypeScript 5.7",
+        "link": "/release-notes/TypeScript 5.7"
+      },
+      {
+        "text": "TypeScript 5.6",
+        "link": "/release-notes/TypeScript 5.6"
+      },
+      {
+        "text": "TypeScript 5.5",
+        "link": "/release-notes/TypeScript 5.5"
+      },
+      {
+        "text": "TypeScript 5.4",
+        "link": "/release-notes/TypeScript 5.4"
+      },
+      {
+        "text": "TypeScript 5.3",
+        "link": "/release-notes/TypeScript 5.3"
+      },
+      {
+        "text": "TypeScript 5.2",
+        "link": "/release-notes/TypeScript 5.2"
+      },
+      {
+        "text": "TypeScript 5.1",
+        "link": "/release-notes/TypeScript 5.1"
+      },
+      {
+        "text": "TypeScript 5.0",
+        "link": "/release-notes/TypeScript 5.0"
+      },
+      {
+        "text": "TypeScript 4.9",
+        "link": "/release-notes/TypeScript 4.9"
+      },
+      {
+        "text": "TypeScript 4.8",
+        "link": "/release-notes/TypeScript 4.8"
+      },
+      {
+        "text": "TypeScript 4.7",
+        "link": "/release-notes/TypeScript 4.7"
+      },
+      {
+        "text": "TypeScript 4.6",
+        "link": "/release-notes/TypeScript 4.6"
+      },
+      {
+        "text": "TypeScript 4.5",
+        "link": "/release-notes/TypeScript 4.5"
+      },
+      {
+        "text": "TypeScript 4.4",
+        "link": "/release-notes/TypeScript 4.4"
+      },
+      {
+        "text": "TypeScript 4.3",
+        "link": "/release-notes/TypeScript 4.3"
+      },
+      {
+        "text": "TypeScript 4.2",
+        "link": "/release-notes/TypeScript 4.2"
+      },
+      {
+        "text": "TypeScript 4.1",
+        "link": "/release-notes/TypeScript 4.1"
+      },
+      {
+        "text": "TypeScript 4.0",
+        "link": "/release-notes/TypeScript 4.0"
+      },
+      {
+        "text": "TypeScript 3.9",
+        "link": "/release-notes/TypeScript 3.9"
+      },
+      {
+        "text": "TypeScript 3.8",
+        "link": "/release-notes/TypeScript 3.8"
+      },
+      {
+        "text": "TypeScript 3.7",
+        "link": "/release-notes/TypeScript 3.7"
+      },
+      {
+        "text": "TypeScript 3.6",
+        "link": "/release-notes/TypeScript 3.6"
+      },
+      {
+        "text": "TypeScript 3.5",
+        "link": "/release-notes/TypeScript 3.5"
+      },
+      {
+        "text": "TypeScript 3.4",
+        "link": "/release-notes/TypeScript 3.4"
+      },
+      {
+        "text": "TypeScript 3.3",
+        "link": "/release-notes/TypeScript 3.3"
+      },
+      {
+        "text": "TypeScript 3.2",
+        "link": "/release-notes/TypeScript 3.2"
+      },
+      {
+        "text": "TypeScript 3.1",
+        "link": "/release-notes/TypeScript 3.1"
+      },
+      {
+        "text": "TypeScript 3.0",
+        "link": "/release-notes/TypeScript 3.0"
+      },
+      {
+        "text": "TypeScript 2.9",
+        "link": "/release-notes/TypeScript 2.9"
+      },
+      {
+        "text": "TypeScript 2.8",
+        "link": "/release-notes/TypeScript 2.8"
+      },
+      {
+        "text": "TypeScript 2.7",
+        "link": "/release-notes/TypeScript 2.7"
+      },
+      {
+        "text": "TypeScript 2.6",
+        "link": "/release-notes/TypeScript 2.6"
+      },
+      {
+        "text": "TypeScript 2.5",
+        "link": "/release-notes/TypeScript 2.5"
+      },
+      {
+        "text": "TypeScript 2.4",
+        "link": "/release-notes/TypeScript 2.4"
+      },
+      {
+        "text": "TypeScript 2.3",
+        "link": "/release-notes/TypeScript 2.3"
+      },
+      {
+        "text": "TypeScript 2.2",
+        "link": "/release-notes/TypeScript 2.2"
+      },
+      {
+        "text": "TypeScript 2.1",
+        "link": "/release-notes/TypeScript 2.1"
+      },
+      {
+        "text": "TypeScript 2.0",
+        "link": "/release-notes/TypeScript 2.0"
+      },
+      {
+        "text": "TypeScript 1.8",
+        "link": "/release-notes/TypeScript 1.8"
+      },
+      {
+        "text": "TypeScript 1.7",
+        "link": "/release-notes/TypeScript 1.7"
+      },
+      {
+        "text": "TypeScript 1.6",
+        "link": "/release-notes/TypeScript 1.6"
+      },
+      {
+        "text": "TypeScript 1.5",
+        "link": "/release-notes/TypeScript 1.5"
+      },
+      {
+        "text": "TypeScript 1.4",
+        "link": "/release-notes/TypeScript 1.4"
+      },
+      {
+        "text": "TypeScript 1.3",
+        "link": "/release-notes/TypeScript 1.3"
+      },
+      {
+        "text": "TypeScript 1.1",
+        "link": "/release-notes/TypeScript 1.1"
+      }
+    ]
+  }
+]

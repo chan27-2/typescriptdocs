@@ -2,16 +2,12 @@ import { transformerTwoslash } from "@shikijs/vitepress-twoslash";
 import { defineConfig } from "vitepress";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 import matter from "gray-matter";
-
-// Define the dirname equivalent for ESM
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Define sidebar item type
 interface SidebarItem {
   text: string;
-  link: string;
+  link?: string;
   items?: SidebarItem[];
   collapsed?: boolean;
 }
@@ -58,7 +54,7 @@ function generateSidebarFromFolders(
   basePath: string = "/",
   defaultCollapsed: boolean = false
 ): SidebarItem[] {
-  const docsDir = path.resolve(__dirname, "..");
+  const docsDir = path.resolve(import.meta.dirname, "..");
   const fullPath = path.join(docsDir, rootDir);
 
   if (!fs.existsSync(fullPath)) {
@@ -149,9 +145,9 @@ function generateSidebarFromFolders(
 
   // Sort items alphabetically by text
   items.sort((a, b) => {
-    // If indexFile exists, put it first
-    if (a.link.endsWith("/")) return -1;
-    if (b.link.endsWith("/")) return 1;
+    // If a has items (folder), put it first
+    if (a.items && !b.items) return -1;
+    if (!a.items && b.items) return 1;
     return a.text.localeCompare(b.text);
   });
 
@@ -185,7 +181,6 @@ function generateMainSidebar() {
     sidebar.push({
       text: section.title,
       collapsed: false,
-      link: `/${section.path}/`,
       items: items,
     });
   }
@@ -198,13 +193,22 @@ function generateMainSidebar() {
     items: generateReleaseNotesSidebar(),
   });
 
+  // INSERT_YOUR_CODE
+  // Log sidebar in a JSON file for debugging
+  try {
+    const debugPath = path.resolve(__dirname, "sidebar-debug.json");
+    fs.writeFileSync(debugPath, JSON.stringify(sidebar, null, 2), "utf-8");
+  } catch (err) {
+    // Ignore errors in debug logging
+  }
+
   return sidebar;
 }
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Typescript Docs",
-  description: "A beautiful typescript documentation",
+  description: "A new documentation for typescript",
   markdown: {
     codeTransformers: [
       transformerTwoslash({
@@ -214,6 +218,8 @@ export default defineConfig({
     languages: ["js", "jsx", "ts", "tsx"] as any,
   },
   themeConfig: {
+    logo: "/images/typescript-design-assets/logo.svg",
+
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: "Home", link: "/" },
@@ -222,7 +228,6 @@ export default defineConfig({
       { text: "Tutorials", link: "/tutorials/migrating-from-javascript" },
     ],
 
-    // Use the dynamic sidebar generator
     sidebar: generateMainSidebar(),
 
     socialLinks: [
