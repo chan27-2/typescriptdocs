@@ -8,7 +8,7 @@ hero:
   text: JavaScript with Types
   tagline: A powerful typed superset of JavaScript that scales from simple scripts to enterprise-grade systems.
   image:
-    src: /images/typescript-design-assets/logo.svg
+    src: /ts-logo.png
     alt: TypeScript Logo
   actions:
     - theme: brand

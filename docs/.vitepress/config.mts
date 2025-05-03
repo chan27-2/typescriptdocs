@@ -232,7 +232,7 @@ const vitepressConfig = defineConfig({
     languages: ["js", "jsx", "ts", "tsx"] as any,
   },
   themeConfig: {
-    logo: "/images/typescript-design-assets/logo.svg",
+    logo: "/ts-logo.png",
 
     // https://vitepress.dev/reference/default-theme-config
     nav: [
