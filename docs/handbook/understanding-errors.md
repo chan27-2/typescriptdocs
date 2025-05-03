@@ -55,7 +55,7 @@ Its logic for issuing an error follows from its logic for determining if the ass
 ### Extra Properties
 
 ```ts twoslash
-// @errors: 2322
+// @errors: 2353
 type A = { m: number };
 const a: A = { m: 10, n: "" };
 ```

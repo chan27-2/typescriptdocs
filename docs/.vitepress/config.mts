@@ -1,9 +1,15 @@
 import { transformerTwoslash } from "@shikijs/vitepress-twoslash";
 import { defineConfig } from "vitepress";
+import { withMermaid } from "vitepress-plugin-mermaid";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-
+import {
+  ModuleDetectionKind,
+  ModuleKind,
+  ModuleResolutionKind,
+  ScriptTarget,
+} from "typescript";
 // Define sidebar item type
 interface SidebarItem {
   text: string;
@@ -206,13 +212,21 @@ function generateMainSidebar() {
 }
 
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
+const vitepressConfig = defineConfig({
   title: "Typescript Docs",
   description: "A new documentation for typescript",
   markdown: {
     codeTransformers: [
       transformerTwoslash({
         explicitTrigger: true,
+        twoslashOptions: {
+          compilerOptions: {
+            target: ScriptTarget.ES2017,
+            module: ModuleKind.CommonJS,
+            moduleResolution: ModuleResolutionKind.Node10,
+            types: ["express"],
+          },
+        },
       }) as any,
     ],
     languages: ["js", "jsx", "ts", "tsx"] as any,
@@ -237,4 +251,12 @@ export default defineConfig({
       message: "Made with ♥︎ by Chan27-2",
     },
   },
+  vite: {
+    optimizeDeps: {
+      include: ["mermaid"],
+    },
+  },
+  ignoreDeadLinks: true,
 });
+
+export default withMermaid(vitepressConfig);

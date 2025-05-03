@@ -262,9 +262,9 @@ function foo(x: [first: string, second: number]) {
   // note: we didn't need to name these 'first' and 'second'
   const [a, b] = x;
   a;
-  //  ^?
+//^?
   b;
-  //  ^?
+//^?
 }
 ```
 

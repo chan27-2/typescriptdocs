@@ -1,7 +1,7 @@
 ---
 title: theory
-layout: '@layouts/DocLayout.astro'
 ---
+
 ```mermaid
 graph LR
   main.ts -- "#quot;./math#quot;" --> math.ts

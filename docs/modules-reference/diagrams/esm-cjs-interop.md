@@ -1,7 +1,7 @@
 ---
 title: esm cjs interop
-layout: '@layouts/DocLayout.astro'
 ---
+
 ```mermaid
 graph TB
   subgraph Transpiled[ESM transpiled to CJS]

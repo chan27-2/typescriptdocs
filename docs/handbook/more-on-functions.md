@@ -597,7 +597,7 @@ const admins = db.filterUsers(function (this: User) {
 This pattern is common with callback-style APIs, where another object typically controls when your function is called. Note that you need to use `function` and not arrow functions to get this behavior:
 
 ```ts twoslash
-// @errors: 7041 7017
+// @errors: 2532
 interface User {
   id: number;
   admin: boolean;

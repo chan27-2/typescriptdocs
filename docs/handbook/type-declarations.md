@@ -95,5 +95,6 @@ If you want to silence warnings about a particular module without writing a decl
 For example, if you wanted to use a module named `some-untyped-module` without having definitions for it, you would write:
 
 ```ts twoslash
+// @moduleDetection: legacy
 declare module "some-untyped-module";
 ```

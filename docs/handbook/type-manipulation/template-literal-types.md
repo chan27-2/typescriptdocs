@@ -163,12 +163,12 @@ const person = makeWatchedObject({
 });
 
 person.on("firstNameChanged", (newName) => {
-  //                        ^?
+  //                                 ^?
   console.log(`new name is ${newName.toUpperCase()}`);
 });
 
 person.on("ageChanged", (newAge) => {
-  //                  ^?
+  //                          ^?
   if (newAge < 0) {
     console.warn("warning! negative age");
   }

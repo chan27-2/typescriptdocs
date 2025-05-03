@@ -1,7 +1,6 @@
 ---
 title: Classes
 
-
 oneline: "How classes work in TypeScript"
 ---
 
@@ -673,7 +672,7 @@ The main thing to note here is that in the derived class, we need to be careful 
 TypeScript doesn't allow accessing `protected` members of a sibling class in a class hierarchy:
 
 ```ts twoslash
-// @errors: 2446
+// @errors: 2445
 class Base {
   protected x: number = 1;
 }
