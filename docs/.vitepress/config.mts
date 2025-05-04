@@ -239,7 +239,7 @@ const vitepressConfig = defineConfig({
       { icon: "github", link: "https://github.com/chan27-2/typescriptdocs" },
     ],
     footer: {
-      message: "Made with ♥︎ by Chan27-2",
+      message: "Made with ♥︎ by <a href='https://github.com/chan27-2'>Chan27-2</a>",
     },
   },
   vite: {

@@ -19,7 +19,7 @@ hero:
       link: /handbook/the-handbook
     - theme: alt
       text: View on GitHub
-      link: https://github.com/chan27-2/typescriptdocs
+      link: https://github.com/microsoft/TypeScript
 
 features:
   - icon: 🛡️
@@ -62,15 +62,15 @@ features:
     <div class="section-content">
       <h2>📖 Popular Topics</h2>
       <div class="link-grid">
-        <a href="/handbook/basic-types" class="link-card">
+        <a href="/handbook/basic" class="link-card">
           <div class="link-icon">📝</div>
           <div class="link-title">Basic Types</div>
         </a>
-        <a href="/handbook/interfaces" class="link-card">
+        <a href="/handbook/object-type" class="link-card">
           <div class="link-icon">🔗</div>
-          <div class="link-title">Interfaces</div>
+          <div class="link-title">Object Types</div>
         </a>
-        <a href="/handbook/functions" class="link-card">
+        <a href="/handbook/more-on-functions" class="link-card">
           <div class="link-icon">⚙️</div>
           <div class="link-title">Functions</div>
         </a>
@@ -78,13 +78,13 @@ features:
           <div class="link-icon">🧩</div>
           <div class="link-title">Classes</div>
         </a>
-        <a href="/handbook/type-manipulation/utility-types" class="link-card">
+        <a href="/handbook/type-manipulation/everyday-types" class="link-card">
           <div class="link-icon">🔧</div>
           <div class="link-title">Utility Types</div>
         </a>
-        <a href="/handbook/type-manipulation/generics" class="link-card">
+        <a href="/handbook/type-manipulation/modules" class="link-card">
           <div class="link-icon">📦</div>
-          <div class="link-title">Generics</div>
+          <div class="link-title">Modules</div>
         </a>
       </div>
     </div>
@@ -142,6 +142,8 @@ html.dark {
 
 .section-content {
   padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .latest-release {
@@ -202,6 +204,9 @@ html.dark .try-typescript {
 
 .link-title {
   font-weight: 500;
+  font-size: 1.05rem;
+  margin-top: 0.25rem;
+  letter-spacing: 0.01em;
 }
 
 .cta-container {
@@ -246,5 +251,18 @@ html.dark .try-typescript {
   .section-content {
     padding: 1.5rem;
   }
+}
+
+.vp-doc a {
+    font-weight: 500;
+    color: var(--vp-c-brand-1);
+    text-decoration: none;
+    transition: color 0.25s, opacity 0.25s;
+}
+
+.vp-doc h2 {
+    margin: 0;
+    border-top: none;
+    padding: 0;
 }
 </style>
