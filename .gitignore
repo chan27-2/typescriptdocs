@@ -12,3 +12,5 @@ docs/.vitepress/temp
 
 # rename-files.sh
 rename-files.sh
+
+dist

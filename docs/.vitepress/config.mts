@@ -199,15 +199,6 @@ function generateMainSidebar() {
     items: generateReleaseNotesSidebar(),
   });
 
-  // INSERT_YOUR_CODE
-  // Log sidebar in a JSON file for debugging
-  try {
-    const debugPath = path.resolve(__dirname, "sidebar-debug.json");
-    fs.writeFileSync(debugPath, JSON.stringify(sidebar, null, 2), "utf-8");
-  } catch (err) {
-    // Ignore errors in debug logging
-  }
-
   return sidebar;
 }
 
