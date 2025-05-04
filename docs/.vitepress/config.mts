@@ -248,6 +248,17 @@ const vitepressConfig = defineConfig({
     },
   },
   ignoreDeadLinks: true,
+  transformHead: () => [
+    [
+      'script',
+      {
+        async: 'true',
+        defer: 'true',
+        'data-website-id': '2b6ca2bd-39fc-4ae6-bed7-e8a94b2c3f70',
+        src: 'https://cloud.umami.is/script.js'
+      }
+    ]
+  ]
 });
 
 export default withMermaid(vitepressConfig);

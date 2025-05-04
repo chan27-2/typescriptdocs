@@ -16,7 +16,7 @@ export default {
       // https://vitepress.dev/guide/extending-default-theme#layout-slots
     });
   },
-  enhanceApp({ app }: EnhanceAppContext) {
+  enhanceApp({ app, router }: EnhanceAppContext) {
     app.use(TwoslashFloatingVue);
   },
 } satisfies Theme;
