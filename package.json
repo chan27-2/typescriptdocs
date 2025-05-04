@@ -1,4 +1,9 @@
 {
+  "name": "typescriptdocs",
+  "version": "1.0.0",
+  "description": "A comprehensive, community-driven resource for TypeScript documentation.",
+  "author": "Sai Chandan Kadarla <saichandan@kadarla.com>",
+  "license": "MIT",
   "devDependencies": {
     "@shikijs/vitepress-twoslash": "^3.3.0",
     "@types/express": "^5.0.1",
