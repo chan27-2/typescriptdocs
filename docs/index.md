@@ -207,6 +207,7 @@ html.dark .try-typescript {
   font-size: 1.05rem;
   margin-top: 0.25rem;
   letter-spacing: 0.01em;
+  text-decoration: none;
 }
 
 .cta-container {
