@@ -62,11 +62,11 @@ features:
     <div class="section-content">
       <h2>📖 Popular Topics</h2>
       <div class="link-grid">
-        <a href="/handbook/basic" class="link-card">
+        <a href="/handbook/everyday-types" class="link-card">
           <div class="link-icon">📝</div>
-          <div class="link-title">Basic Types</div>
+          <div class="link-title">Types</div>
         </a>
-        <a href="/handbook/object-type" class="link-card">
+        <a href="/handbook/object-types.html" class="link-card">
           <div class="link-icon">🔗</div>
           <div class="link-title">Object Types</div>
         </a>
@@ -78,11 +78,7 @@ features:
           <div class="link-icon">🧩</div>
           <div class="link-title">Classes</div>
         </a>
-        <a href="/handbook/type-manipulation/everyday-types" class="link-card">
-          <div class="link-icon">🔧</div>
-          <div class="link-title">Utility Types</div>
-        </a>
-        <a href="/handbook/type-manipulation/modules" class="link-card">
+        <a href="/handbook/modules" class="link-card">
           <div class="link-icon">📦</div>
           <div class="link-title">Modules</div>
         </a>
