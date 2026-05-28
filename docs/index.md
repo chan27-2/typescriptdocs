@@ -1,7 +1,7 @@
 ---
 layout: home
-title: TypeScript Docs
-titleTemplate: The Modern TypeScript Documentation
+title: TypeScript Docs — The Modern TypeScript Documentation
+description: A modern, community-driven TypeScript documentation. Learn the language, browse the handbook, and stay up to date with every release.
 
 hero:
   name: TypeScript
@@ -51,9 +51,9 @@ features:
   <div class="section latest-release">
     <div class="section-content">
       <h2>🎉 Latest Release</h2>
-      <p>TypeScript <strong>5.8</strong> is now available. Explore what's new in the latest version of TypeScript!</p>
+      <p>TypeScript <strong>6.0</strong> is now available. See what's new, what's been retired, and how to get your project ready for what's next.</p>
       <div class="cta-container">
-        <a href="/release-notes/TypeScript%205.8" class="cta-button">Read Release Notes</a>
+        <a href="/release-notes/TypeScript%206.0" class="cta-button">Read Release Notes</a>
       </div>
     </div>
   </div>
@@ -118,22 +118,33 @@ html.dark {
   gap: 2.5rem;
 }
 
-.h2 {
+.custom-sections h2 {
   font-size: 1.5rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  border: none;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.custom-sections p {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 70ch;
 }
 
 .section {
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid var(--vp-c-divider);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .section:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08), 0 3px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
 }
 
 .section-content {
@@ -143,14 +154,23 @@ html.dark {
 }
 
 .latest-release {
+  /* The gradient card carries its own visual weight — the section's
+     default border would clash with it. */
+  border-color: transparent;
   background: linear-gradient(45deg, var(--ts-blue-dark), var(--ts-blue));
   color: white;
 }
 
-.latest-release a {
+/* Inline links inside paragraph copy get the underline; the pill CTA
+   below opts out via its own class. */
+.latest-release p a {
   color: white;
   text-decoration: underline;
   font-weight: 600;
+}
+
+.latest-release .cta-button {
+  text-decoration: none;
 }
 
 .quick-links {
@@ -181,16 +201,22 @@ html.dark .try-typescript {
   text-align: center;
   padding: 1.25rem 0.75rem;
   border-radius: 8px;
+  border: 1px solid var(--vp-c-divider);
   background-color: var(--vp-c-bg);
   color: var(--vp-c-text-1);
-  text-decoration: none;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  text-decoration: none !important;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .link-card:hover {
-  transform: translateY(-2px);
-  background-color: var(--vp-c-gray-soft);
-  text-decoration: none;
+  border-color: var(--ts-blue);
+  background-color: var(--vp-c-bg-soft);
+}
+
+.link-card:focus-visible,
+.cta-button:focus-visible {
+  outline: 2px solid var(--ts-blue);
+  outline-offset: 3px;
 }
 
 .link-icon {
@@ -250,16 +276,14 @@ html.dark .try-typescript {
   }
 }
 
-.vp-doc a {
-    font-weight: 500;
-    color: var(--vp-c-brand-1);
-    text-decoration: none;
-    transition: color 0.25s, opacity 0.25s;
-}
-
-.vp-doc h2 {
-    margin: 0;
-    border-top: none;
-    padding: 0;
+/* Scoped to .custom-sections only — these previously leaked into every
+   handbook page and were killing inline link underlines + h2 separators
+   site-wide. */
+.custom-sections.vp-doc a,
+.custom-sections .vp-doc a {
+  font-weight: 500;
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+  transition: color 0.25s, opacity 0.25s;
 }
 </style>

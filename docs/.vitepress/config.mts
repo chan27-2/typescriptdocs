@@ -18,34 +18,40 @@ interface SidebarItem {
   collapsed?: boolean;
 }
 
-// Define the release notes items manually but in a more maintainable way using a version ranges array
-function generateReleaseNotesSidebar() {
-  // Define the version ranges we want to support
-  const majorVersions = [5, 4, 3, 2, 1];
-  const versionRanges = {
-    5: [8, 7, 6, 5, 4, 3, 2, 1, 0],
-    4: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
-    3: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
-    2: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
-    1: [8, 7, 6, 5, 4, 3, 1],
-  };
+// Auto-discover release notes by scanning the release-notes directory.
+// This keeps the sidebar in lock-step with the files actually present on
+// disk — adding a new "TypeScript X.Y.md" is enough to surface it.
+function generateReleaseNotesSidebar(): SidebarItem[] {
+  const docsDir = path.resolve(import.meta.dirname, "..");
+  const releaseDir = path.join(docsDir, "release-notes");
 
-  // Generate the sidebar items
-  const items: SidebarItem[] = [];
+  if (!fs.existsSync(releaseDir)) {
+    return [];
+  }
 
-  // For each major version
-  for (const major of majorVersions) {
-    // For each minor version
-    for (const minor of versionRanges[major]) {
-      const version = `${major}.${minor}`;
-      items.push({
-        text: `TypeScript ${version}`,
-        link: `/release-notes/TypeScript ${version}`,
+  const versionPattern = /^TypeScript (\d+)\.(\d+)\.md$/;
+  const versions: { major: number; minor: number }[] = [];
+
+  for (const entry of fs.readdirSync(releaseDir)) {
+    const match = entry.match(versionPattern);
+    if (match) {
+      versions.push({
+        major: parseInt(match[1], 10),
+        minor: parseInt(match[2], 10),
       });
     }
   }
 
-  return items;
+  // Newest first
+  versions.sort((a, b) => (b.major - a.major) || (b.minor - a.minor));
+
+  return versions.map(({ major, minor }) => {
+    const version = `${major}.${minor}`;
+    return {
+      text: `TypeScript ${version}`,
+      link: `/release-notes/TypeScript ${version}`,
+    };
+  });
 }
 
 /**
@@ -216,6 +222,12 @@ const vitepressConfig = defineConfig({
             module: ModuleKind.CommonJS,
             moduleResolution: ModuleResolutionKind.Node10,
             types: ["express"],
+            // TS 6.0 deprecates a handful of options used by twoslash (Node10
+            // resolution, baseUrl, etc.). The existing docs snippets rely on
+            // this resolution, so silence the deprecation for the renderer
+            // only — Microsoft's recommended approach during the 6.0→7.0
+            // transition window.
+            ignoreDeprecations: "6.0",
           },
         },
       }) as any,

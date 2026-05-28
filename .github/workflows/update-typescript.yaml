@@ -1,0 +1,66 @@
+name: Check for new TypeScript releases
+
+on:
+  # Run every Monday at 09:00 UTC. TypeScript releases are usually announced
+  # mid-week, so by Monday the npm + handbook pages have settled.
+  schedule:
+    - cron: "0 9 * * 1"
+  # Manual trigger so maintainers can force a check at any time.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check-and-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Detect new TypeScript release
+        id: detect
+        run: node scripts/update-typescript-version.mjs
+
+      - name: Short-circuit if nothing changed
+        id: diff
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No changes — the site is already on the latest TypeScript release."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open PR with the bump
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/typescript-${{ steps.detect.outputs.major_minor }}
+          base: main
+          commit-message: "chore: bump to TypeScript ${{ steps.detect.outputs.latest }}"
+          title: "chore: bump to TypeScript ${{ steps.detect.outputs.latest }}"
+          body: |
+            Automated bump by `.github/workflows/update-typescript.yaml`.
+
+            **Detected latest TypeScript release:** `${{ steps.detect.outputs.latest }}`
+
+            ### What changed
+            - Scaffolded `docs/release-notes/TypeScript ${{ steps.detect.outputs.major_minor }}.md` (if missing)
+            - Bumped the homepage "Latest Release" banner
+            - Bumped the `typescript` devDependency
+
+            ### Reviewer checklist
+            - [ ] Flesh out the auto-scaffolded release-notes page (the watcher only inserts a placeholder linking to the official notes — humans should fill in the details).
+            - [ ] Double-check the homepage banner copy.
+            - [ ] Verify `pnpm install` resolves cleanly and `pnpm docs:build` still passes.
+          labels: |
+            automation
+            typescript-release
+          delete-branch: true
