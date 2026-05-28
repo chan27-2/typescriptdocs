@@ -1,217 +1,206 @@
 import { transformerTwoslash } from "@shikijs/vitepress-twoslash";
-import { defineConfig } from "vitepress";
+import { defineConfig, type DefaultTheme } from "vitepress";
 import { withMermaid } from "vitepress-plugin-mermaid";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import {
-  ModuleDetectionKind,
   ModuleKind,
   ModuleResolutionKind,
   ScriptTarget,
 } from "typescript";
-// Define sidebar item type
-interface SidebarItem {
-  text: string;
-  link?: string;
-  items?: SidebarItem[];
-  collapsed?: boolean;
-}
 
-// Auto-discover release notes by scanning the release-notes directory.
-// This keeps the sidebar in lock-step with the files actually present on
-// disk — adding a new "TypeScript X.Y.md" is enough to surface it.
-function generateReleaseNotesSidebar(): SidebarItem[] {
-  const docsDir = path.resolve(import.meta.dirname, "..");
-  const releaseDir = path.join(docsDir, "release-notes");
+type SidebarItem = DefaultTheme.SidebarItem;
+type SidebarMulti = DefaultTheme.SidebarMulti;
 
-  if (!fs.existsSync(releaseDir)) {
-    return [];
-  }
+const DOCS_DIR = path.resolve(import.meta.dirname, "..");
 
-  const versionPattern = /^TypeScript (\d+)\.(\d+)\.md$/;
-  const versions: { major: number; minor: number }[] = [];
-
-  for (const entry of fs.readdirSync(releaseDir)) {
-    const match = entry.match(versionPattern);
-    if (match) {
-      versions.push({
-        major: parseInt(match[1], 10),
-        minor: parseInt(match[2], 10),
-      });
-    }
-  }
-
-  // Newest first
-  versions.sort((a, b) => (b.major - a.major) || (b.minor - a.minor));
-
-  return versions.map(({ major, minor }) => {
-    const version = `${major}.${minor}`;
-    return {
-      text: `TypeScript ${version}`,
-      link: `/release-notes/TypeScript ${version}`,
-    };
-  });
-}
+// ---------------------------------------------------------------------------
+// Sidebar generation
+// ---------------------------------------------------------------------------
 
 /**
- * Function to generate sidebar from folder structure
- * @param rootDir - Root directory to start scanning from (relative to docs/)
- * @param basePath - Base URL path for links
- * @param defaultCollapsed - Whether sections should be collapsed by default
- * @returns Array of sidebar items
+ * Walk a docs subdirectory and turn it into a sidebar tree. Subdirectories
+ * become collapsible groups; markdown files become leaf links. Titles come
+ * from each file's frontmatter `title` when present, otherwise from a
+ * Title-Cased filename.
  */
-function generateSidebarFromFolders(
+function buildSidebarFromFolder(
   rootDir: string,
-  basePath: string = "/",
+  basePath: string,
   defaultCollapsed: boolean = false
 ): SidebarItem[] {
-  const docsDir = path.resolve(import.meta.dirname, "..");
-  const fullPath = path.join(docsDir, rootDir);
+  const fullPath = path.join(DOCS_DIR, rootDir);
+  if (!fs.existsSync(fullPath)) return [];
 
-  if (!fs.existsSync(fullPath)) {
-    console.warn(`Directory not found: ${fullPath}`);
-    return [];
-  }
+  const entries = fs.readdirSync(fullPath, { withFileTypes: true });
+
+  const dirs = entries.filter(
+    (e) => e.isDirectory() && !e.name.startsWith(".")
+  );
+  const files = entries.filter(
+    (e) => e.isFile() && e.name.endsWith(".md") && e.name !== "index.md"
+  );
 
   const items: SidebarItem[] = [];
-  const dirContents = fs.readdirSync(fullPath, { withFileTypes: true });
 
-  // Process directories first (for better organization)
-  const dirs = dirContents.filter(
-    (dirent) => dirent.isDirectory() && !dirent.name.startsWith(".")
-  );
-  const files = dirContents.filter(
-    (dirent) =>
-      dirent.isFile() &&
-      dirent.name.endsWith(".md") &&
-      dirent.name !== "index.md"
-  );
-
-  // Check if index.md exists for this directory
-  const indexFile = dirContents.find(
-    (dirent) => dirent.isFile() && dirent.name === "index.md"
-  );
-
-  // Process directories
   for (const dir of dirs) {
-    const dirPath = path.join(rootDir, dir.name);
+    const subPath = path.join(rootDir, dir.name);
     const linkPath = `${basePath}${dir.name}/`;
+    const subItems = buildSidebarFromFolder(subPath, linkPath, true);
 
-    // Get subdirectory items
-    const subItems = generateSidebarFromFolders(dirPath, linkPath, true);
-
-    // Try to find index.md in subdirectory for the title
     const indexPath = path.join(fullPath, dir.name, "index.md");
-    let text =
-      dir.name.charAt(0).toUpperCase() + dir.name.slice(1).replace(/-/g, " ");
-
+    let text = titleCase(dir.name);
     if (fs.existsSync(indexPath)) {
-      try {
-        const fileContent = fs.readFileSync(indexPath, "utf8");
-        const { data } = matter(fileContent);
-        if (data.title) {
-          text = data.title;
-        }
-      } catch (error) {
-        console.warn(`Error reading frontmatter from ${indexPath}:`, error);
-      }
+      const { data } = matter(fs.readFileSync(indexPath, "utf8"));
+      if (data?.title) text = data.title;
     }
 
     items.push({
       text,
       link: linkPath,
-      items: subItems,
       collapsed: defaultCollapsed,
+      items: subItems,
     });
   }
 
-  // Process markdown files
   for (const file of files) {
-    const fileName = file.name.replace(".md", "");
+    const slug = file.name.replace(/\.md$/, "");
     const filePath = path.join(fullPath, file.name);
-
+    let text = titleCase(slug);
     try {
-      const fileContent = fs.readFileSync(filePath, "utf8");
-      const { data } = matter(fileContent);
-
-      items.push({
-        text:
-          data.title ||
-          fileName.charAt(0).toUpperCase() +
-            fileName.slice(1).replace(/-/g, " "),
-        link: `${basePath}${fileName}`,
-      });
-    } catch (error) {
-      console.warn(`Error reading frontmatter from ${filePath}:`, error);
-
-      // Fallback to using filename
-      items.push({
-        text:
-          fileName.charAt(0).toUpperCase() +
-          fileName.slice(1).replace(/-/g, " "),
-        link: `${basePath}${fileName}`,
-      });
+      const { data } = matter(fs.readFileSync(filePath, "utf8"));
+      if (data?.title) text = data.title;
+    } catch {
+      // fall through to filename-based title
     }
+    items.push({ text, link: `${basePath}${slug}` });
   }
 
-  // Sort items alphabetically by text
+  // Folders first, then files; alphabetical within each.
   items.sort((a, b) => {
-    // If a has items (folder), put it first
     if (a.items && !b.items) return -1;
     if (!a.items && b.items) return 1;
-    return a.text.localeCompare(b.text);
+    return a.text!.localeCompare(b.text!);
   });
 
   return items;
 }
 
-// Generate sidebar for main sections
-function generateMainSidebar() {
-  const mainSections = [
-    { path: "get-started", title: "Get Started" },
-    { path: "handbook", title: "Handbook" },
-    { path: "reference", title: "Reference" },
-    { path: "modules-reference", title: "Modules Reference" },
-    { path: "tutorials", title: "Tutorials" },
-    { path: "declaration-files", title: "Declaration Files" },
-    { path: "javascript", title: "JavaScript" },
-    { path: "project-config", title: "Project Configuration" },
-  ];
-
-  const sidebar: SidebarItem[] = [];
-
-  for (const section of mainSections) {
-    // Check if directory exists
-    const sectionPath = path.resolve(__dirname, "..", section.path);
-    if (!fs.existsSync(sectionPath)) {
-      continue;
-    }
-
-    const items = generateSidebarFromFolders(section.path, `/${section.path}/`);
-
-    sidebar.push({
-      text: section.title,
-      collapsed: false,
-      items: items,
-    });
-  }
-
-  // Add Release Notes section with manually generated items
-  sidebar.push({
-    text: "Release Notes",
-    collapsed: true,
-    link: "/release-notes/",
-    items: generateReleaseNotesSidebar(),
-  });
-
-  return sidebar;
+function titleCase(slug: string): string {
+  return slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, " ");
 }
 
-// https://vitepress.dev/reference/site-config
+/**
+ * Release notes are auto-discovered from disk and grouped by major version.
+ * The latest major is expanded, older majors collapse to keep the sidebar
+ * compact. This is the change that fixes "the sidebar is out of scroll" —
+ * users no longer wade through 49 flat items to find where they are.
+ */
+function buildReleaseNotesSidebar(): SidebarItem[] {
+  const releaseDir = path.join(DOCS_DIR, "release-notes");
+  if (!fs.existsSync(releaseDir)) return [];
+
+  const versionRe = /^TypeScript (\d+)\.(\d+)\.md$/;
+  const byMajor = new Map<number, { major: number; minor: number }[]>();
+
+  for (const entry of fs.readdirSync(releaseDir)) {
+    const m = entry.match(versionRe);
+    if (!m) continue;
+    const major = parseInt(m[1], 10);
+    const minor = parseInt(m[2], 10);
+    if (!byMajor.has(major)) byMajor.set(major, []);
+    byMajor.get(major)!.push({ major, minor });
+  }
+
+  const majors = [...byMajor.keys()].sort((a, b) => b - a);
+  const latestMajor = majors[0];
+
+  return majors.map((major) => {
+    const versions = byMajor.get(major)!.sort((a, b) => b.minor - a.minor);
+    return {
+      text: `TypeScript ${major}.x`,
+      collapsed: major !== latestMajor,
+      items: versions.map(({ major, minor }) => ({
+        text: `TypeScript ${major}.${minor}`,
+        link: `/release-notes/TypeScript ${major}.${minor}`,
+      })),
+    };
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Per-section sidebars
+// ---------------------------------------------------------------------------
+
+const sections: Array<{
+  path: string;
+  title: string;
+  urlPrefix: string;
+}> = [
+  { path: "get-started", title: "Get Started", urlPrefix: "/get-started/" },
+  { path: "handbook", title: "Handbook", urlPrefix: "/handbook/" },
+  { path: "reference", title: "Reference", urlPrefix: "/reference/" },
+  {
+    path: "modules-reference",
+    title: "Modules Reference",
+    urlPrefix: "/modules-reference/",
+  },
+  { path: "tutorials", title: "Tutorials", urlPrefix: "/tutorials/" },
+  {
+    path: "declaration-files",
+    title: "Declaration Files",
+    urlPrefix: "/declaration-files/",
+  },
+  { path: "javascript", title: "JavaScript", urlPrefix: "/javascript/" },
+  {
+    path: "project-config",
+    title: "Project Configuration",
+    urlPrefix: "/project-config/",
+  },
+];
+
+function buildSidebars(): SidebarMulti {
+  const sidebars: SidebarMulti = {};
+
+  for (const section of sections) {
+    const sectionDir = path.join(DOCS_DIR, section.path);
+    if (!fs.existsSync(sectionDir)) continue;
+
+    sidebars[section.urlPrefix] = [
+      {
+        text: section.title,
+        link: section.urlPrefix,
+        items: buildSidebarFromFolder(section.path, section.urlPrefix, false),
+      },
+    ];
+  }
+
+  sidebars["/release-notes/"] = [
+    {
+      text: "Release Notes",
+      link: "/release-notes/",
+      items: buildReleaseNotesSidebar(),
+    },
+  ];
+
+  return sidebars;
+}
+
+// ---------------------------------------------------------------------------
+// VitePress config
+// ---------------------------------------------------------------------------
+
 const vitepressConfig = defineConfig({
-  title: "Typescript Docs",
-  description: "A new documentation for typescript",
+  title: "TypeScript Docs",
+  description:
+    "A modern, community-driven TypeScript documentation. Read the handbook, browse references, and follow every release.",
+
+  // Serves URLs like /handbook/everyday-types instead of /handbook/everyday-types.html.
+  // Works out of the box on GitHub Pages, Vercel, Netlify, and the built-in
+  // VitePress preview server.
+  cleanUrls: true,
+
   markdown: {
     codeTransformers: [
       transformerTwoslash({
@@ -223,10 +212,7 @@ const vitepressConfig = defineConfig({
             moduleResolution: ModuleResolutionKind.Node10,
             types: ["express"],
             // TS 6.0 deprecates a handful of options used by twoslash (Node10
-            // resolution, baseUrl, etc.). The existing docs snippets rely on
-            // this resolution, so silence the deprecation for the renderer
-            // only — Microsoft's recommended approach during the 6.0→7.0
-            // transition window.
+            // resolution, baseUrl, etc.). Silence them at the renderer only.
             ignoreDeprecations: "6.0",
           },
         },
@@ -234,43 +220,99 @@ const vitepressConfig = defineConfig({
     ],
     languages: ["js", "jsx", "ts", "tsx"] as any,
   },
+
   themeConfig: {
     logo: "/ts-logo.png",
 
-    // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: "Home", link: "/" },
-      { text: "Release Notes", link: "/release-notes/" },
-      { text: "Handbook", link: "/handbook/the-handbook" },
-      { text: "Tutorials", link: "/tutorials/migrating-from-javascript" },
+      {
+        text: "Learn",
+        items: [
+          { text: "Get Started", link: "/get-started/" },
+          { text: "Handbook", link: "/handbook/the-handbook" },
+          { text: "Tutorials", link: "/tutorials/migrating-from-javascript" },
+        ],
+      },
+      {
+        text: "Reference",
+        items: [
+          { text: "Language Reference", link: "/reference/utility-types" },
+          {
+            text: "Modules Reference",
+            link: "/modules-reference/introduction",
+          },
+          { text: "JavaScript", link: "/javascript/intro-to-js-with-ts" },
+          {
+            text: "Declaration Files",
+            link: "/declaration-files/introduction",
+          },
+          {
+            text: "Project Configuration",
+            link: "/project-config/tsconfig.json",
+          },
+        ],
+      },
+      { text: "Releases", link: "/release-notes/" },
+      {
+        text: "Playground",
+        link: "https://www.typescriptlang.org/play",
+      },
     ],
 
-    sidebar: generateMainSidebar(),
+    sidebar: buildSidebars(),
+
+    outline: {
+      level: [2, 3],
+      label: "On this page",
+    },
+
+    search: {
+      provider: "local",
+      options: {
+        detailedView: true,
+      },
+    },
 
     socialLinks: [
       { icon: "github", link: "https://github.com/chan27-2/typescriptdocs" },
     ],
+
     footer: {
-      message: "Made with ♥︎ by <a href='https://github.com/chan27-2'>Chan27-2</a>",
+      message:
+        "Made with ♥︎ by <a href='https://github.com/chan27-2'>Chan27-2</a>",
+      copyright: "MIT Licensed · Community-driven TypeScript documentation",
+    },
+
+    editLink: {
+      pattern:
+        "https://github.com/chan27-2/typescriptdocs/edit/main/docs/:path",
+      text: "Edit this page on GitHub",
+    },
+
+    lastUpdated: {
+      text: "Last updated",
     },
   },
+
   vite: {
     optimizeDeps: {
       include: ["mermaid"],
     },
   },
+
   ignoreDeadLinks: true,
+
   transformHead: () => [
     [
-      'script',
+      "script",
       {
-        async: 'true',
-        defer: 'true',
-        'data-website-id': '2b6ca2bd-39fc-4ae6-bed7-e8a94b2c3f70',
-        src: 'https://cloud.umami.is/script.js'
-      }
-    ]
-  ]
+        async: "true",
+        defer: "true",
+        "data-website-id": "2b6ca2bd-39fc-4ae6-bed7-e8a94b2c3f70",
+        src: "https://cloud.umami.is/script.js",
+      },
+    ],
+  ],
 });
 
 export default withMermaid(vitepressConfig);

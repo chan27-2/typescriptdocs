@@ -60,38 +60,63 @@ features:
 
   <div class="section quick-links">
     <div class="section-content">
-      <h2>📖 Popular Topics</h2>
+      <h2>📖 Start Reading</h2>
+      <p>The most-read chapters of the Handbook. Pick whichever matches what you're working on.</p>
       <div class="link-grid">
+        <a href="/handbook/the-handbook" class="link-card">
+          <div class="link-icon">📘</div>
+          <div class="link-title">The Handbook</div>
+          <div class="link-desc">Start here — the canonical tour of the language.</div>
+        </a>
         <a href="/handbook/everyday-types" class="link-card">
           <div class="link-icon">📝</div>
-          <div class="link-title">Types</div>
+          <div class="link-title">Everyday Types</div>
+          <div class="link-desc">Primitives, arrays, unions, literals, and friends.</div>
         </a>
-        <a href="/handbook/object-types.html" class="link-card">
+        <a href="/handbook/object-types" class="link-card">
           <div class="link-icon">🔗</div>
           <div class="link-title">Object Types</div>
+          <div class="link-desc">Interfaces, optional and readonly properties.</div>
         </a>
         <a href="/handbook/more-on-functions" class="link-card">
           <div class="link-icon">⚙️</div>
           <div class="link-title">Functions</div>
+          <div class="link-desc">Overloads, generics, this, and rest parameters.</div>
         </a>
         <a href="/handbook/classes" class="link-card">
           <div class="link-icon">🧩</div>
           <div class="link-title">Classes</div>
+          <div class="link-desc">Inheritance, visibility, abstract, and members.</div>
         </a>
         <a href="/handbook/modules" class="link-card">
           <div class="link-icon">📦</div>
           <div class="link-title">Modules</div>
+          <div class="link-desc">Imports, exports, and the module systems.</div>
         </a>
       </div>
     </div>
   </div>
 
-  <div class="section try-typescript">
+  <div class="section stay-current">
     <div class="section-content">
-      <h2>💻 Try TypeScript Online</h2>
-      <p>The <strong>TypeScript Playground</strong> is your interactive environment to write, test, and share TypeScript code directly in the browser.</p>
-      <div class="cta-container">
-        <a href="https://www.typescriptlang.org/play" target="_blank" class="cta-button">Open Playground</a>
+      <h2>🚀 Stay Current</h2>
+      <p>TypeScript moves fast. Here's how to keep up.</p>
+      <div class="link-grid stay-current-grid">
+        <a href="https://www.typescriptlang.org/play" target="_blank" rel="noopener" class="link-card">
+          <div class="link-icon">▶︎</div>
+          <div class="link-title">Playground</div>
+          <div class="link-desc">Try TypeScript in your browser — no install required.</div>
+        </a>
+        <a href="/release-notes/" class="link-card">
+          <div class="link-icon">🆕</div>
+          <div class="link-title">Release Notes</div>
+          <div class="link-desc">Every release, from 1.1 to 6.0 — features, breaking changes, performance.</div>
+        </a>
+        <a href="https://github.com/chan27-2/typescriptdocs" target="_blank" rel="noopener" class="link-card">
+          <div class="link-icon">⭐</div>
+          <div class="link-title">Contribute</div>
+          <div class="link-desc">This site is open-source. Edits, fixes, and additions welcome.</div>
+        </a>
       </div>
     </div>
   </div>
@@ -173,44 +198,42 @@ html.dark {
   text-decoration: none;
 }
 
-.quick-links {
+.quick-links,
+.stay-current {
   background-color: var(--vp-c-bg-soft);
-}
-
-.try-typescript {
-  background: linear-gradient(135deg, #f6fafd, #e6f1fc);
-  color: var(--vp-c-text-1);
-}
-
-html.dark .try-typescript {
-  background: linear-gradient(135deg, #1a1c1f, #0e1217);
-  color: var(--vp-c-text-1);
 }
 
 .link-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1rem;
   margin-top: 1.5rem;
+}
+
+/* The "Stay Current" row at the bottom has fewer items, so let them
+   breathe a bit wider. */
+.stay-current-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
 .link-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 1.25rem 0.75rem;
-  border-radius: 8px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 1.25rem 1.25rem 1.1rem;
+  border-radius: 10px;
   border: 1px solid var(--vp-c-divider);
   background-color: var(--vp-c-bg);
   color: var(--vp-c-text-1);
   text-decoration: none !important;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
 }
 
 .link-card:hover {
   border-color: var(--ts-blue);
-  background-color: var(--vp-c-bg-soft);
+  background-color: var(--vp-c-bg);
+  transform: translateY(-1px);
 }
 
 .link-card:focus-visible,
@@ -220,16 +243,23 @@ html.dark .try-typescript {
 }
 
 .link-icon {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
+  line-height: 1;
   margin-bottom: 0.5rem;
 }
 
 .link-title {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 1.05rem;
-  margin-top: 0.25rem;
-  letter-spacing: 0.01em;
-  text-decoration: none;
+  color: var(--vp-c-text-1);
+  letter-spacing: -0.005em;
+}
+
+.link-desc {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--vp-c-text-2);
+  margin-top: 0.35rem;
 }
 
 .cta-container {
@@ -256,21 +286,12 @@ html.dark .try-typescript {
   transform: translateY(-1px);
 }
 
-.try-typescript .cta-button {
-  background-color: var(--ts-blue);
-  color: white;
-}
-
-.try-typescript .cta-button:hover {
-  background-color: var(--ts-blue-dark);
-  transform: translateY(-1px);
-}
-
 @media (max-width: 640px) {
-  .link-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .link-grid,
+  .stay-current-grid {
+    grid-template-columns: 1fr;
   }
-  
+
   .section-content {
     padding: 1.5rem;
   }
