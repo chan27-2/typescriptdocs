@@ -58,7 +58,7 @@ jobs:
 
       - name: Open PR with the bump
         if: steps.diff.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           # GITHUB_TOKEN can only open PRs if "Allow GitHub Actions to create
           # and approve pull requests" is enabled in Settings → Actions →
