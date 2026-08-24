@@ -80,7 +80,8 @@ jobs:
             - Bumped the homepage "Latest Release" banner
             - Bumped the `typescript` devDependency${{ steps.detect.outputs.toolchain_skipped == 'true' && ' — **skipped**, see below' || ' (and refreshed `pnpm-lock.yaml`)' }}
 
-            ${{ steps.detect.outputs.toolchain_skipped == 'true' && '> [!WARNING] This release crosses a **major** boundary, so the `typescript` devDependency was deliberately left alone. `docs/.vitepress/config.mts` imports `ScriptTarget`/`ModuleKind`/`ModuleResolutionKind` from `typescript`, and twoslash needs the same classic compiler API — a major bump can remove it and break the build. Migrate the toolchain in a separate, deliberate PR.' || '' }}
+            ${{ steps.detect.outputs.toolchain_skipped == 'true' && '> [!WARNING]' || '' }}
+            ${{ steps.detect.outputs.toolchain_skipped == 'true' && '> This release crosses a **major** boundary, so the `typescript` devDependency was deliberately left alone. `docs/.vitepress/config.mts` imports `ScriptTarget`/`ModuleKind`/`ModuleResolutionKind` from `typescript`, and twoslash needs the same classic compiler API — a major bump can remove it and break the build. Migrate the toolchain in a separate, deliberate PR.' || '' }}
 
             ### Reviewer checklist
             - [ ] Flesh out the auto-scaffolded release-notes page (the watcher only inserts a placeholder linking to the official notes — humans should fill in the details).
