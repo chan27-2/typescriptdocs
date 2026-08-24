@@ -51,9 +51,9 @@ features:
   <div class="section latest-release">
     <div class="section-content">
       <h2>🎉 Latest Release</h2>
-      <p>TypeScript <strong>6.0</strong> is now available. See what's new, what's been retired, and how to get your project ready for what's next.</p>
+      <p>TypeScript <strong>7.0</strong> is now available — the first stable release built on the native Go compiler, with 8&ndash;12x faster builds. See what's new and what's been removed.</p>
       <div class="cta-container">
-        <a href="/release-notes/TypeScript%206.0" class="cta-button">Read Release Notes</a>
+        <a href="/release-notes/TypeScript%207.0" class="cta-button">Read Release Notes</a>
       </div>
     </div>
   </div>
@@ -110,7 +110,7 @@ features:
         <a href="/release-notes/" class="link-card">
           <div class="link-icon">🆕</div>
           <div class="link-title">Release Notes</div>
-          <div class="link-desc">Every release, from 1.1 to 6.0 — features, breaking changes, performance.</div>
+          <div class="link-desc">Every release, from 1.1 to 7.0 — features, breaking changes, performance.</div>
         </a>
         <a href="https://github.com/chan27-2/typescriptdocs" target="_blank" rel="noopener" class="link-card">
           <div class="link-icon">⭐</div>
