@@ -11,7 +11,7 @@
     "gray-matter": "^4.0.3",
     "mermaid": "^11.6.0",
     "reflect-metadata": "^0.2.2",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "vitepress": "^1.6.3",
     "vitepress-plugin-mermaid": "^2.0.17"
   },
