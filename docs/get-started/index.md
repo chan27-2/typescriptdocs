@@ -82,9 +82,9 @@ npm install --save-dev typescript
     <a href="https://www.typescriptlang.org/play" target="_blank" rel="noopener">Open the Playground →</a>
   </div>
   <div class="next-card">
-    <h3>What's new in 6.0</h3>
-    <p>TypeScript 6.0 is the latest release — a transition step toward the native 7.0 compiler. See the new features and deprecations.</p>
-    <a href="/release-notes/TypeScript%206.0">Read the release notes →</a>
+    <h3>What's new in 7.0</h3>
+    <p>TypeScript 7.0 is the latest release — the native Go compiler, 8–12x faster builds, and the removal of everything 6.0 deprecated.</p>
+    <a href="/release-notes/TypeScript%207.0">Read the release notes →</a>
   </div>
 </div>
 

@@ -2,12 +2,19 @@
 // Checks npm for the latest stable TypeScript release and, if newer than
 // anything in docs/release-notes/, scaffolds a release-notes file, bumps
 // the homepage's "Latest Release" banner, and bumps the typescript
-// devDependency in package.json. Designed to run on a cron from CI — see
+// devDependency in package.json (same-major bumps only — see
+// bumpPackageJson). Designed to run on a cron from CI — see
 // .github/workflows/update-typescript.yaml. The resulting branch should be
 // reviewed by a human (the release-notes file is a best-effort scaffold;
 // the canonical Microsoft post may have more detail).
 
-import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
+import {
+  readFileSync,
+  writeFileSync,
+  readdirSync,
+  existsSync,
+  appendFileSync,
+} from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -111,16 +118,41 @@ function bumpHomepageBanner(major, minor) {
   return true;
 }
 
-function bumpPackageJson(rawVersion) {
+// Bumps the `typescript` devDependency, but ONLY within the current major.
+//
+// The devDependency is not what builds the docs — it is what `docs/.vitepress/
+// config.mts` imports (ScriptTarget/ModuleKind/ModuleResolutionKind) and what
+// twoslash uses to type-check `\`\`\`ts twoslash` blocks. Both need the classic
+// compiler API. TypeScript 7.0 removed that API from the package's main entry
+// point (`typescript` now exports only `version` plus `typescript/unstable/*`),
+// so auto-bumping across a major boundary produces a PR that cannot build.
+//
+// Returns "bumped" | "skipped-major" | false. A skipped major bump is surfaced
+// in the PR body so a human can do the migration deliberately.
+function bumpPackageJson(rawVersion, major) {
   const src = readFileSync(PACKAGE_JSON, "utf8");
   const pkg = JSON.parse(src);
-  if (!pkg.devDependencies?.typescript) return false;
+  const current = pkg.devDependencies?.typescript;
+  if (!current) return false;
+
   const next = `^${rawVersion}`;
-  if (pkg.devDependencies.typescript === next) return false;
+  if (current === next) return false;
+
+  const currentMajor = parseSemver(current.replace(/^[^\d]*/, ""))?.major;
+  if (currentMajor !== undefined && currentMajor !== major) {
+    console.warn(
+      `[update-ts] NOT bumping devDependency ${current} -> ${next}: ` +
+        `crossing a major boundary (${currentMajor} -> ${major}) can break the ` +
+        `VitePress config and twoslash, which need the classic compiler API. ` +
+        `Migrate the toolchain by hand.`
+    );
+    return "skipped-major";
+  }
+
   pkg.devDependencies.typescript = next;
   // preserve trailing newline + 2-space indent (matches existing file)
   writeFileSync(PACKAGE_JSON, JSON.stringify(pkg, null, 2) + "\n");
-  return true;
+  return "bumped";
 }
 
 async function main() {
@@ -148,35 +180,36 @@ async function main() {
     changes.push(`bump homepage banner to ${latest.major}.${latest.minor}`);
   }
 
-  if (bumpPackageJson(latest.raw)) {
+  const pkgResult = bumpPackageJson(latest.raw, latest.major);
+  if (pkgResult === "bumped") {
     changes.push(`bump typescript devDependency to ^${latest.raw}`);
   }
 
-  if (changes.length === 0) {
-    console.log("[update-ts] already up to date");
-    // exit code 0 with no changes — CI will detect a clean tree
-    return;
-  }
-
   for (const c of changes) console.log(`[update-ts] ${c}`);
+  if (changes.length === 0) console.log("[update-ts] already up to date");
 
-  // Emit a machine-readable summary so the CI workflow can use it.
-  const summary = {
+  // Emit a machine-readable summary so the CI workflow can use it. Written
+  // unconditionally — later steps reference these outputs even on a no-op run,
+  // and an unset output silently reads as the empty string.
+  writeOutputs({
+    summary: JSON.stringify({
+      latest: latest.raw,
+      majorMinor: `${latest.major}.${latest.minor}`,
+      changes,
+    }),
     latest: latest.raw,
-    majorMinor: `${latest.major}.${latest.minor}`,
-    changes,
-  };
-  console.log(`::set-output name=summary::${JSON.stringify(summary)}`);
-  if (process.env.GITHUB_OUTPUT) {
-    const fs = await import("node:fs");
-    fs.appendFileSync(
-      process.env.GITHUB_OUTPUT,
-      `summary=${JSON.stringify(summary)}\n` +
-        `latest=${latest.raw}\n` +
-        `major_minor=${latest.major}.${latest.minor}\n` +
-        `has_changes=true\n`
-    );
-  }
+    major_minor: `${latest.major}.${latest.minor}`,
+    has_changes: String(changes.length > 0),
+    toolchain_skipped: String(pkgResult === "skipped-major"),
+  });
+}
+
+function writeOutputs(outputs) {
+  if (!process.env.GITHUB_OUTPUT) return;
+  const lines = Object.entries(outputs)
+    .map(([k, v]) => `${k}=${v}\n`)
+    .join("");
+  appendFileSync(process.env.GITHUB_OUTPUT, lines);
 }
 
 main().catch(err => {

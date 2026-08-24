@@ -17,10 +17,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 9
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
 
@@ -31,17 +36,36 @@ jobs:
       - name: Short-circuit if nothing changed
         id: diff
         run: |
-          if git diff --quiet; then
+          # --porcelain, not `git diff --quiet`: the scaffolded release-notes
+          # file is untracked, and `git diff` ignores untracked files entirely.
+          # A release whose only change was the new notes file would otherwise
+          # be reported as "no changes" and silently dropped.
+          if [ -z "$(git status --porcelain)" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No changes — the site is already on the latest TypeScript release."
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
+            git status --short
           fi
+
+      - name: Refresh pnpm lockfile
+        # Only needed when the devDependency actually moved. The deploy workflow
+        # runs a bare `pnpm install`, which pnpm treats as --frozen-lockfile in
+        # CI — a package.json bump without a matching lockfile update would make
+        # the PR merge break Pages deploys.
+        if: steps.diff.outputs.changed == 'true' && steps.detect.outputs.toolchain_skipped == 'false'
+        run: pnpm install --lockfile-only --no-frozen-lockfile
 
       - name: Open PR with the bump
         if: steps.diff.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
+          # GITHUB_TOKEN can only open PRs if "Allow GitHub Actions to create
+          # and approve pull requests" is enabled in Settings → Actions →
+          # General. If that setting is off (or an org policy forbids it), set a
+          # RELEASE_PAT repo secret with `repo` scope and it will be used
+          # instead.
+          token: ${{ secrets.RELEASE_PAT || secrets.GITHUB_TOKEN }}
           branch: chore/typescript-${{ steps.detect.outputs.major_minor }}
           base: main
           commit-message: "chore: bump to TypeScript ${{ steps.detect.outputs.latest }}"
@@ -54,7 +78,10 @@ jobs:
             ### What changed
             - Scaffolded `docs/release-notes/TypeScript ${{ steps.detect.outputs.major_minor }}.md` (if missing)
             - Bumped the homepage "Latest Release" banner
-            - Bumped the `typescript` devDependency
+            - Bumped the `typescript` devDependency${{ steps.detect.outputs.toolchain_skipped == 'true' && ' — **skipped**, see below' || ' (and refreshed `pnpm-lock.yaml`)' }}
+
+            ${{ steps.detect.outputs.toolchain_skipped == 'true' && '> [!WARNING]' || '' }}
+            ${{ steps.detect.outputs.toolchain_skipped == 'true' && '> This release crosses a **major** boundary, so the `typescript` devDependency was deliberately left alone. `docs/.vitepress/config.mts` imports `ScriptTarget`/`ModuleKind`/`ModuleResolutionKind` from `typescript`, and twoslash needs the same classic compiler API — a major bump can remove it and break the build. Migrate the toolchain in a separate, deliberate PR.' || '' }}
 
             ### Reviewer checklist
             - [ ] Flesh out the auto-scaffolded release-notes page (the watcher only inserts a placeholder linking to the official notes — humans should fill in the details).
