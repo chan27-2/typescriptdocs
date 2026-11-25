@@ -201,6 +201,9 @@ const vitepressConfig = defineConfig({
   // VitePress preview server.
   cleanUrls: true,
 
+  // kadarla platform analytics: first-party, cookieless (kadarla.com/apps/typescriptdocs).
+  head: [["script", { defer: "", src: "https://kadarla.com/k.js" }]],
+
   markdown: {
     codeTransformers: [
       transformerTwoslash({
